@@ -46,6 +46,9 @@
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0d0d0d">
 
+<link rel="icon" href="images/logo-48.png" type="image/png" sizes="48x48">
+<link rel="apple-touch-icon" href="images/logo-128.png">
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="preload" as="image" href="images/smash-burger-doble.jpg" fetchpriority="high">
@@ -81,25 +84,25 @@
   body p { font-size:clamp(1rem,.5vw + .9rem,1.125rem); line-height:1.6; margin:0; }
 
   /* ── LOGO ──────────────────────────────────────────────────────────────
-     Badge con degradado radial + halo, para el efecto LED encendido.
+     El PNG ya trae la llama con su propio resplandor. El halo radial del
+     ::before lo apoya para que se lea "encendido" sobre el negro, sin
+     meterle una caja sólida que compita con el CTA rojo de al lado.
      La marca es la única excepción al "acento solo en CTAs": es identidad,
-     no una llamada a la acción compitiendo con el botón principal. */
-  .logo-badge{
+     no una llamada a la acción disputándole atención al botón principal. */
+  .logo-mark{
+    position:relative; flex-shrink:0;
     display:inline-flex; align-items:center; justify-content:center;
-    width:34px; height:34px; border-radius:10px; flex-shrink:0;
-    background:radial-gradient(circle at 50% 32%, #ff6069 0%, #e63946 48%, #8f1620 100%);
-    box-shadow:
-      0 0 0 1px rgb(230 57 70 / .55),
-      0 0 12px rgb(230 57 70 / .55),
-      0 0 26px rgb(230 57 70 / .32),
-      inset 0 1px 0 rgb(255 255 255 / .28);
   }
+  .logo-mark::before{
+    content:''; position:absolute; inset:-18%; border-radius:50%;
+    background:radial-gradient(circle,
+      rgb(230 57 70 / .55) 0%, rgb(230 57 70 / .30) 42%, rgb(230 57 70 / 0) 72%);
+  }
+  .logo-mark img{ position:relative; display:block; }
   .logo-word{
     color:var(--color-accent);
     text-shadow:0 0 10px rgb(230 57 70 / .55), 0 0 22px rgb(230 57 70 / .28);
   }
-  /* El halo del footer es más contenido: ahí la marca no compite con nada */
-  .logo-badge--sm{ width:30px; height:30px; border-radius:9px; box-shadow:0 0 0 1px rgb(230 57 70 / .5), 0 0 10px rgb(230 57 70 / .4); }
 
   /* Reserva de espacio del hero antes de que Tailwind cargue → CLS 0 */
   .hero{ position:relative; min-height:calc(100svh - 4rem); display:flex; align-items:flex-end; }
@@ -164,12 +167,10 @@
 <header class="sticky top-0 z-50 h-16 border-b border-white/10 bg-ink/90 backdrop-blur">
   <div class="mx-auto flex h-full w-full max-w-6xl items-center justify-between gap-2 px-4 md:px-8">
 
-    <!-- Logo: llama en badge LED + wordmark en rojo -->
+    <!-- Logo: marca con halo LED + nombre del local en rojo -->
     <a href="#main" class="inline-flex min-h-[44px] items-center gap-2.5" aria-label="Fuego Smash">
-      <span class="logo-badge" aria-hidden="true">
-        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
-          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/>
-        </svg>
+      <span class="logo-mark" aria-hidden="true">
+        <img src="images/logo-128.png" alt="" width="40" height="40" decoding="async" class="h-10 w-10">
       </span>
       <span class="logo-word font-display text-lg tracking-wide sm:text-xl md:text-2xl">Fuego Smash</span>
     </a>
@@ -510,10 +511,8 @@
   <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:grid-cols-3 md:px-8">
     <div>
       <div class="flex items-center gap-2.5">
-        <span class="logo-badge logo-badge--sm" aria-hidden="true">
-          <svg width="17" height="17" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
-            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/>
-          </svg>
+        <span class="logo-mark" aria-hidden="true">
+          <img src="images/logo-128.png" alt="" width="36" height="36" loading="lazy" decoding="async" class="h-9 w-9">
         </span>
         <p class="logo-word font-display text-xl uppercase">Fuego Smash</p>
       </div>
