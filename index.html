@@ -10,11 +10,16 @@
 
   PENDIENTE DE CONFIRMAR antes de publicar (buscá "REVISAR" en el archivo):
     1. El H1 y la primera FAQ afirman que NO hacen delivery. Si están en
-       DoorDash / UberEats / Grubhub, hay que reescribirlos.
+       DoorDash / UberEats / Grubhub, hay que reescribirlos (en ES y EN).
     2. Los teléfonos (540) 555-0142 y 555-0198 están en el rango reservado
        para números ficticios en EE.UU. Verificar que sean los reales.
     3. El dominio fuegosmashva.com tiene que estar registrado y con HTTPS
        para que el og:image y el canonical funcionen.
+
+  IDIOMAS: el botón ES/EN cambia el texto del lado del cliente y recuerda
+  la elección en localStorage. Sirve para el visitante, pero Google solo
+  indexa el HTML servido (español). Para posicionar también en inglés
+  hacen falta URLs separadas (/en/) con hreflang — ver nota al final.
 
   NOTA: images/estructura.jpg quedó sin usar. Es una infografía que lista
   ingredientes (bacon jam, provolone, rúcula, alioli) que no están en el
@@ -37,6 +42,7 @@
 <meta property="og:image:alt" content="Double Smash Clásica con doble cheddar fundido y cebolla caramelizada">
 <meta property="og:url" content="https://fuegosmashva.com/">
 <meta property="og:locale" content="es_US">
+<meta property="og:locale:alternate" content="en_US">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="theme-color" content="#0d0d0d">
 
@@ -53,7 +59,7 @@
   :root{
     --color-bg:#0d0d0d; --color-surface:#16181d;
     --color-text:#f5f5f5; --color-muted:#a3a3a3;
-    --color-accent:#e63946;              /* reservado para CTAs, nada más */
+    --color-accent:#e63946;              /* CTAs y marca */
     --radius:12px;
   }
   html{ scroll-behavior:smooth; -webkit-text-size-adjust:100%; }
@@ -73,6 +79,27 @@
   body h2{ font-size:clamp(1.75rem,3.5vw + .5rem,2.75rem); line-height:1.12; margin:0; text-wrap:balance; }
   body h3{ font-size:clamp(1.125rem,1.2vw + .9rem,1.375rem); line-height:1.25; margin:0; }
   body p { font-size:clamp(1rem,.5vw + .9rem,1.125rem); line-height:1.6; margin:0; }
+
+  /* ── LOGO ──────────────────────────────────────────────────────────────
+     Badge con degradado radial + halo, para el efecto LED encendido.
+     La marca es la única excepción al "acento solo en CTAs": es identidad,
+     no una llamada a la acción compitiendo con el botón principal. */
+  .logo-badge{
+    display:inline-flex; align-items:center; justify-content:center;
+    width:34px; height:34px; border-radius:10px; flex-shrink:0;
+    background:radial-gradient(circle at 50% 32%, #ff6069 0%, #e63946 48%, #8f1620 100%);
+    box-shadow:
+      0 0 0 1px rgb(230 57 70 / .55),
+      0 0 12px rgb(230 57 70 / .55),
+      0 0 26px rgb(230 57 70 / .32),
+      inset 0 1px 0 rgb(255 255 255 / .28);
+  }
+  .logo-word{
+    color:var(--color-accent);
+    text-shadow:0 0 10px rgb(230 57 70 / .55), 0 0 22px rgb(230 57 70 / .28);
+  }
+  /* El halo del footer es más contenido: ahí la marca no compite con nada */
+  .logo-badge--sm{ width:30px; height:30px; border-radius:9px; box-shadow:0 0 0 1px rgb(230 57 70 / .5), 0 0 10px rgb(230 57 70 / .4); }
 
   /* Reserva de espacio del hero antes de que Tailwind cargue → CLS 0 */
   .hero{ position:relative; min-height:calc(100svh - 4rem); display:flex; align-items:flex-end; }
@@ -129,24 +156,47 @@
 
 <body class="bg-ink text-cream antialiased pb-20 md:pb-0">
 
-<a href="#main" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:m-3 focus:rounded-lg focus:bg-brasa focus:px-4 focus:py-3 focus:font-semibold focus:text-white">
+<a href="#main" data-i18n="skip" class="sr-only focus:not-sr-only focus:absolute focus:z-[100] focus:m-3 focus:rounded-lg focus:bg-brasa focus:px-4 focus:py-3 focus:font-semibold focus:text-white">
   Saltar al contenido
 </a>
 
-<!-- ══════════ HEADER (sticky, 3 links + CTA — sin menú hamburguesa) ══════════ -->
+<!-- ══════════ HEADER (sticky) ══════════ -->
 <header class="sticky top-0 z-50 h-16 border-b border-white/10 bg-ink/90 backdrop-blur">
-  <div class="mx-auto flex h-full w-full max-w-6xl items-center justify-between px-4 md:px-8">
-    <a href="#main" class="inline-flex min-h-[44px] items-center font-display text-xl tracking-wide md:text-2xl">
-      Fuego Smash
+  <div class="mx-auto flex h-full w-full max-w-6xl items-center justify-between gap-2 px-4 md:px-8">
+
+    <!-- Logo: llama en badge LED + wordmark en rojo -->
+    <a href="#main" class="inline-flex min-h-[44px] items-center gap-2.5" aria-label="Fuego Smash">
+      <span class="logo-badge" aria-hidden="true">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/>
+        </svg>
+      </span>
+      <span class="logo-word font-display text-lg tracking-wide sm:text-xl md:text-2xl">Fuego Smash</span>
     </a>
-    <nav aria-label="Principal" class="flex items-center gap-1 md:gap-2">
-      <a href="#menu"      class="hidden items-center px-3 py-3 text-sm text-muted transition hover:text-cream sm:inline-flex">Menú</a>
-      <a href="#ubicacion" class="hidden items-center px-3 py-3 text-sm text-muted transition hover:text-cream sm:inline-flex">Ubicación</a>
-      <a href="#faq"       class="hidden items-center px-3 py-3 text-sm text-muted transition hover:text-cream md:inline-flex">Preguntas</a>
+
+    <nav aria-label="Principal" data-i18n-aria="nav.main" class="flex items-center gap-1 md:gap-2">
+      <a href="#menu"      data-i18n="nav.menu"     class="hidden items-center px-3 py-3 text-sm text-muted transition hover:text-cream md:inline-flex">Menú</a>
+      <a href="#ubicacion" data-i18n="nav.location" class="hidden items-center px-3 py-3 text-sm text-muted transition hover:text-cream md:inline-flex">Ubicación</a>
+      <a href="#faq"       data-i18n="nav.faq"      class="hidden items-center px-3 py-3 text-sm text-muted transition hover:text-cream lg:inline-flex">Preguntas</a>
+
+      <!-- Cambio de idioma. Es <button> porque hace algo, no navega. -->
+      <button type="button" id="btn-idioma" data-evt="cta_idioma" aria-label="Switch to English"
+              class="inline-flex h-11 min-w-[44px] items-center justify-center gap-1.5 rounded-xl px-3 text-sm font-semibold text-muted ring-1 ring-white/20 transition hover:bg-white/10 hover:text-cream">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="9"/><path d="M3.6 9h16.8M3.6 15h16.8M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z"/>
+        </svg>
+        <span id="btn-idioma-txt">EN</span>
+      </button>
+
+      <!-- En móvil el CTA queda solo con el ícono: el texto completo ya está
+           en el hero y en la barra fija inferior. Así el header no desborda. -->
       <a href="https://www.google.com/maps/search/?api=1&query=Fuego+Smash+1420+Central+Park+Blvd+Fredericksburg+VA+22401"
-         target="_blank" rel="noopener" data-evt="cta_maps_header"
-         class="inline-flex min-h-[44px] items-center justify-center gap-2 rounded-xl bg-brasa px-4 py-3 text-sm font-semibold text-white transition hover:brightness-110 active:scale-[.98]">
-        Cómo llegar
+         target="_blank" rel="noopener" data-evt="cta_maps_header" data-i18n-aria="cta.directions" aria-label="Cómo llegar"
+         class="inline-flex min-h-[44px] min-w-[44px] items-center justify-center gap-2 rounded-xl bg-brasa px-3 py-3 text-sm font-semibold text-white transition hover:brightness-110 active:scale-[.98] sm:px-4">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/>
+        </svg>
+        <span class="hidden sm:inline" data-i18n="cta.directions">Cómo llegar</span>
       </a>
     </nav>
   </div>
@@ -158,6 +208,7 @@
   <!-- REVISAR: el H1 afirma que no hay delivery. Cambiarlo si están en apps. -->
   <section class="hero">
     <img src="images/smash-burger-doble.jpg"
+         data-i18n-alt="alt.hero"
          alt="Double Smash Clásica: dos medallones de carne prensada con doble cheddar fundido, cebolla caramelizada y pepinillos en pan brioche con sésamo"
          width="1280" height="720" loading="eager" fetchpriority="high" decoding="sync"
          class="hero-img">
@@ -165,11 +216,11 @@
 
     <!-- pb-28 en móvil deja libre la altura de la barra fija inferior -->
     <div class="hero-copy relative mx-auto w-full max-w-6xl px-4 pb-28 pt-20 md:px-8 md:pb-24 md:pt-28">
-      <h1 class="font-display uppercase">
+      <h1 class="font-display uppercase" data-i18n="hero.h1">
         La smash que no se puede<br class="hidden sm:block"> pedir por delivery
       </h1>
 
-      <p class="mt-5 max-w-[52ch] text-muted">
+      <p class="mt-5 max-w-[52ch] text-muted" data-i18n="hero.sub">
         Carne prensada en plancha al momento, queso que se funde solo y pan brioche tostado.
         Se come acá, recién salida — Central Park, Fredericksburg.
       </p>
@@ -181,73 +232,73 @@
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/>
           </svg>
-          Cómo llegar
+          <span data-i18n="cta.directions">Cómo llegar</span>
         </a>
-        <a href="#menu" data-evt="cta_menu_hero"
+        <a href="#menu" data-evt="cta_menu_hero" data-i18n="cta.menu"
            class="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl px-7 py-4 text-base font-semibold text-cream ring-1 ring-white/25 transition hover:bg-white/10 active:scale-[.98] sm:w-auto">
           Ver el menú y precios
         </a>
       </div>
 
       <p class="mt-5 text-sm text-muted">
-        <span id="estado-apertura">Abierto todos los días</span>
-        <span aria-hidden="true"> · </span>Sin reserva<span aria-hidden="true"> · </span>★ 4.8 en Google
+        <span id="estado-apertura" data-i18n="hero.openEveryDay">Abierto todos los días</span>
+        <span aria-hidden="true"> · </span><span data-i18n="hero.noReserve">Sin reserva</span><span aria-hidden="true"> · </span><span data-i18n="hero.rating">★ 4.8 en Google</span>
       </p>
     </div>
   </section>
 
   <!-- ══════════ Franja de confianza ══════════ -->
-  <section aria-label="Datos rápidos del local" class="border-y border-white/10 bg-surface">
+  <section aria-label="Datos rápidos del local" data-i18n-aria="strip.aria" class="border-y border-white/10 bg-surface">
     <div class="mx-auto grid w-full max-w-6xl grid-cols-2 gap-x-4 gap-y-5 px-4 py-6 text-sm md:grid-cols-4 md:px-8">
       <div>
-        <span class="block text-xs uppercase tracking-wider text-muted">Reseñas</span>
-        <span class="mt-1 block font-semibold">★ 4.8 · 287 opiniones</span>
+        <span class="block text-xs uppercase tracking-wider text-muted" data-i18n="strip.reviews">Reseñas</span>
+        <span class="mt-1 block font-semibold" data-i18n="strip.reviewsVal">★ 4.8 · 287 opiniones</span>
       </div>
       <div>
-        <span class="block text-xs uppercase tracking-wider text-muted">Dónde</span>
+        <span class="block text-xs uppercase tracking-wider text-muted" data-i18n="strip.where">Dónde</span>
         <span class="mt-1 block font-semibold">Central Park, Fredericksburg</span>
       </div>
       <div>
-        <span class="block text-xs uppercase tracking-wider text-muted">Horarios</span>
-        <span class="mt-1 block font-semibold">Todos los días, almuerzo y cena</span>
+        <span class="block text-xs uppercase tracking-wider text-muted" data-i18n="strip.hours">Horarios</span>
+        <span class="mt-1 block font-semibold" data-i18n="strip.hoursVal">Todos los días, almuerzo y cena</span>
       </div>
       <div>
-        <span class="block text-xs uppercase tracking-wider text-muted">Precio</span>
-        <span class="mt-1 block font-semibold">$10 a $20 por persona</span>
+        <span class="block text-xs uppercase tracking-wider text-muted" data-i18n="strip.price">Precio</span>
+        <span class="mt-1 block font-semibold" data-i18n="strip.priceVal">$10 a $20 por persona</span>
       </div>
     </div>
   </section>
 
   <!-- ══════════ 2. BENEFICIOS ══════════ -->
   <section aria-labelledby="h-beneficios" class="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24">
-    <h2 id="h-beneficios" class="font-display uppercase">Por qué se siente distinta</h2>
-    <p class="mt-4 max-w-[65ch] text-muted">
+    <h2 id="h-beneficios" class="font-display uppercase" data-i18n="ben.h2">Por qué se siente distinta</h2>
+    <p class="mt-4 max-w-[65ch] text-muted" data-i18n="ben.lead">
       No es una hamburguesa grande: es una hamburguesa bien hecha. La diferencia está en tres cosas.
     </p>
 
     <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
       <article class="rounded-xl bg-surface p-6 ring-1 ring-white/10">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-brasa" aria-hidden="true">
-          <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/>
+          <path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/><circle cx="12" cy="12" r="3.5"/>
         </svg>
-        <h3 class="mt-4 font-display uppercase">Sabor que se nota</h3>
-        <p class="mt-2 text-muted">Carne prensada contra la plancha caliente: se sella por fuera, queda jugosa por dentro. Eso es el smash.</p>
+        <h3 class="mt-4 font-display uppercase" data-i18n="ben.1t">Sabor que se nota</h3>
+        <p class="mt-2 text-muted" data-i18n="ben.1b">Carne prensada contra la plancha caliente: se sella por fuera, queda jugosa por dentro. Eso es el smash.</p>
       </article>
 
       <article class="rounded-xl bg-surface p-6 ring-1 ring-white/10">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-brasa" aria-hidden="true">
           <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
         </svg>
-        <h3 class="mt-4 font-display uppercase">Sale rápido</h3>
-        <p class="mt-2 text-muted">El medallón fino se hace en minutos. Pedís, esperás poco y comés caliente — no tibia después de un viaje en auto.</p>
+        <h3 class="mt-4 font-display uppercase" data-i18n="ben.2t">Sale rápido</h3>
+        <p class="mt-2 text-muted" data-i18n="ben.2b">El medallón fino se hace en minutos. Pedís, esperás poco y comés caliente — no tibia después de un viaje en auto.</p>
       </article>
 
       <article class="rounded-xl bg-surface p-6 ring-1 ring-white/10 sm:col-span-2 lg:col-span-1">
         <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" class="text-brasa" aria-hidden="true">
           <path d="M3 11h18M5 11V8a7 7 0 0 1 14 0v3M4 11h16v2a6 6 0 0 1-6 6h-4a6 6 0 0 1-6-6v-2Z"/>
         </svg>
-        <h3 class="mt-4 font-display uppercase">Se arma frente tuyo</h3>
-        <p class="mt-2 text-muted">Ves la plancha, escuchás el chisporroteo y te la dan en la mano. Sin cajas, sin bolsas, sin esperar media hora.</p>
+        <h3 class="mt-4 font-display uppercase" data-i18n="ben.3t">Se arma frente tuyo</h3>
+        <p class="mt-2 text-muted" data-i18n="ben.3b">Ves la plancha, escuchás el chisporroteo y te la dan en la mano. Sin cajas, sin bolsas, sin esperar media hora.</p>
       </article>
     </div>
   </section>
@@ -255,14 +306,15 @@
   <!-- ══════════ 3. MENÚ (con precios visibles) ══════════ -->
   <section id="menu" aria-labelledby="h-menu" class="scroll-mt-20 border-y border-white/10 bg-surface">
     <div class="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24">
-      <h2 id="h-menu" class="font-display uppercase">El menú</h2>
-      <p class="mt-4 max-w-[65ch] text-muted">Pocas opciones, todas buenas. Precios de frente, sin sorpresas al pagar.</p>
+      <h2 id="h-menu" class="font-display uppercase" data-i18n="menu.h2">El menú</h2>
+      <p class="mt-4 max-w-[65ch] text-muted" data-i18n="menu.lead">Pocas opciones, todas buenas. Precios de frente, sin sorpresas al pagar.</p>
 
       <div class="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
         <article class="overflow-hidden rounded-xl bg-ink ring-1 ring-white/10">
           <div class="aspect-square w-full overflow-hidden bg-ink">
             <img src="images/smash-burger-doble.jpg"
+                 data-i18n-alt="alt.item1"
                  alt="Double Smash Clásica con doble cheddar fundido, cebolla caramelizada y pepinillos en pan brioche"
                  width="1280" height="720" loading="lazy" decoding="async"
                  class="h-full w-full object-cover">
@@ -272,13 +324,14 @@
               <h3 class="font-display uppercase">Double Smash Clásica</h3>
               <span class="whitespace-nowrap font-display text-brasa">$12.99</span>
             </div>
-            <p class="mt-2 text-muted">Dos medallones smash, doble cheddar, cebolla caramelizada, pepinillos y salsa especial de la casa en pan brioche.</p>
+            <p class="mt-2 text-muted" data-i18n="menu.1d">Dos medallones smash, doble cheddar, cebolla caramelizada, pepinillos y salsa especial de la casa en pan brioche.</p>
           </div>
         </article>
 
         <article class="overflow-hidden rounded-xl bg-ink ring-1 ring-white/10">
           <div class="aspect-square w-full overflow-hidden bg-ink">
             <img src="images/hamburguesa_doble.jpg"
+                 data-i18n-alt="alt.item2"
                  alt="BBQ Bacon Smash con bacon crocante y cheddar ahumado en pan brioche tostado"
                  width="554" height="554" loading="lazy" decoding="async"
                  class="h-full w-full object-cover">
@@ -288,27 +341,27 @@
               <h3 class="font-display uppercase">BBQ Bacon Smash</h3>
               <span class="whitespace-nowrap font-display text-brasa">$14.49</span>
             </div>
-            <p class="mt-2 text-muted">Medallón smash, bacon crocante, cheddar ahumado, aros de cebolla crocante y salsa BBQ casera.</p>
+            <p class="mt-2 text-muted" data-i18n="menu.2d">Medallón smash, bacon crocante, cheddar ahumado, aros de cebolla crocante y salsa BBQ casera.</p>
           </div>
         </article>
 
         <article class="flex flex-col rounded-xl bg-ink p-6 ring-1 ring-white/10 sm:col-span-2 lg:col-span-1">
-          <h3 class="font-display uppercase">Para acompañar</h3>
+          <h3 class="font-display uppercase" data-i18n="menu.sides">Para acompañar</h3>
           <ul class="mt-4 divide-y divide-white/10">
             <li class="flex items-baseline justify-between gap-4 py-3">
-              <span>Papas a la Francesa</span>
+              <span data-i18n="menu.s1">Papas a la Francesa</span>
               <span class="whitespace-nowrap font-display text-brasa">$4.50</span>
             </li>
             <li class="flex items-baseline justify-between gap-4 py-3">
-              <span>Papas con Cheddar y Bacon</span>
+              <span data-i18n="menu.s2">Papas con Cheddar y Bacon</span>
               <span class="whitespace-nowrap font-display text-brasa">$6.50</span>
             </li>
             <li class="flex items-baseline justify-between gap-4 py-3">
-              <span>Aros de Cebolla</span>
+              <span data-i18n="menu.s3">Aros de Cebolla</span>
               <span class="whitespace-nowrap font-display text-brasa">$5.50</span>
             </li>
           </ul>
-          <p class="mt-auto pt-6 text-sm text-muted">Pagás con efectivo, débito, crédito, Apple Pay o Google Pay.</p>
+          <p class="mt-auto pt-6 text-sm text-muted" data-i18n="menu.pay">Pagás con efectivo, débito, crédito, Apple Pay o Google Pay.</p>
         </article>
 
       </div>
@@ -316,21 +369,23 @@
   </section>
 
   <!-- ══════════ 4. TESTIMONIOS ══════════ -->
+  <!-- Las reseñas NO se traducen: son citas textuales de clientes reales.
+       Cada una declara su propio lang. Solo se traduce la atribución. -->
   <section aria-labelledby="h-resenas" class="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24">
-    <h2 id="h-resenas" class="font-display uppercase">Lo que dicen los que ya vinieron</h2>
-    <p class="mt-4 text-muted">★ 4.8 sobre 287 opiniones en Google.</p>
+    <h2 id="h-resenas" class="font-display uppercase" data-i18n="rev.h2">Lo que dicen los que ya vinieron</h2>
+    <p class="mt-4 text-muted" data-i18n="rev.lead">★ 4.8 sobre 287 opiniones en Google.</p>
 
     <div class="mt-10 grid gap-6 md:grid-cols-2">
       <figure class="rounded-xl bg-surface p-6 ring-1 ring-white/10">
-        <div class="text-brasa" aria-label="5 de 5 estrellas">★★★★★</div>
+        <div class="text-brasa" aria-label="5 de 5 estrellas" data-i18n-aria="rev.stars">★★★★★</div>
         <blockquote class="mt-3"><p lang="en">“Best smash burger I've had in the Fredericksburg area, the bun holds up perfectly”</p></blockquote>
-        <figcaption class="mt-4 text-sm text-muted">— Mike H., reseña de Google</figcaption>
+        <figcaption class="mt-4 text-sm text-muted" data-i18n="rev.c1">— Mike H., reseña de Google</figcaption>
       </figure>
 
       <figure class="rounded-xl bg-surface p-6 ring-1 ring-white/10">
-        <div class="text-brasa" aria-label="5 de 5 estrellas">★★★★★</div>
-        <blockquote class="mt-3"><p>“Excelente atención, la BBQ Bacon es un golazo, siempre pido lo mismo”</p></blockquote>
-        <figcaption class="mt-4 text-sm text-muted">— Daniela P., reseña de Google</figcaption>
+        <div class="text-brasa" aria-label="5 de 5 estrellas" data-i18n-aria="rev.stars">★★★★★</div>
+        <blockquote class="mt-3"><p lang="es">“Excelente atención, la BBQ Bacon es un golazo, siempre pido lo mismo”</p></blockquote>
+        <figcaption class="mt-4 text-sm text-muted" data-i18n="rev.c2">— Daniela P., reseña de Google</figcaption>
       </figure>
     </div>
   </section>
@@ -338,11 +393,11 @@
   <!-- ══════════ 5. UBICACIÓN Y HORARIOS ══════════ -->
   <section id="ubicacion" aria-labelledby="h-ubicacion" class="scroll-mt-20 border-y border-white/10 bg-surface">
     <div class="mx-auto w-full max-w-6xl px-4 py-16 md:px-8 md:py-24">
-      <h2 id="h-ubicacion" class="font-display uppercase">Dónde estamos</h2>
+      <h2 id="h-ubicacion" class="font-display uppercase" data-i18n="loc.h2">Dónde estamos</h2>
 
       <div class="mt-10 grid gap-10 lg:grid-cols-2 lg:gap-16">
         <div>
-          <h3 class="text-sm uppercase tracking-wider text-muted">Dirección</h3>
+          <h3 class="text-sm uppercase tracking-wider text-muted" data-i18n="loc.address">Dirección</h3>
           <p class="mt-2 text-xl">1420 Central Park Blvd<br>Fredericksburg, VA 22401</p>
 
           <div class="mt-6 flex flex-col gap-3 sm:flex-row">
@@ -352,7 +407,7 @@
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
                 <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/>
               </svg>
-              Abrir en Google Maps
+              <span data-i18n="loc.maps">Abrir en Google Maps</span>
             </a>
             <a href="tel:+15405550142" data-evt="cta_tel"
                class="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl px-7 py-4 font-semibold text-cream ring-1 ring-white/25 transition hover:bg-white/10 active:scale-[.98] sm:w-auto">
@@ -362,14 +417,14 @@
         </div>
 
         <div>
-          <h3 class="text-sm uppercase tracking-wider text-muted">Horarios</h3>
+          <h3 class="text-sm uppercase tracking-wider text-muted" data-i18n="loc.hours">Horarios</h3>
           <dl class="mt-3 divide-y divide-white/10 rounded-xl bg-ink px-5 ring-1 ring-white/10">
-            <div class="flex items-baseline justify-between gap-4 py-3.5"><dt>Lunes a Jueves</dt><dd class="text-muted">11:00 AM – 9:00 PM</dd></div>
-            <div class="flex items-baseline justify-between gap-4 py-3.5"><dt>Viernes y Sábado</dt><dd class="text-muted">11:00 AM – 10:00 PM</dd></div>
-            <div class="flex items-baseline justify-between gap-4 py-3.5"><dt>Domingo</dt><dd class="text-muted">12:00 PM – 8:00 PM</dd></div>
-            <div class="flex items-baseline justify-between gap-4 py-3.5"><dt>Feriados</dt><dd class="text-muted">12:00 PM – 8:00 PM</dd></div>
+            <div class="flex items-baseline justify-between gap-4 py-3.5"><dt data-i18n="loc.d1">Lunes a Jueves</dt><dd class="text-muted">11:00 AM – 9:00 PM</dd></div>
+            <div class="flex items-baseline justify-between gap-4 py-3.5"><dt data-i18n="loc.d2">Viernes y Sábado</dt><dd class="text-muted">11:00 AM – 10:00 PM</dd></div>
+            <div class="flex items-baseline justify-between gap-4 py-3.5"><dt data-i18n="loc.d3">Domingo</dt><dd class="text-muted">12:00 PM – 8:00 PM</dd></div>
+            <div class="flex items-baseline justify-between gap-4 py-3.5"><dt data-i18n="loc.d4">Feriados</dt><dd class="text-muted">12:00 PM – 8:00 PM</dd></div>
           </dl>
-          <p class="mt-4 text-sm text-muted">No tomamos reservas: venís, pedís y te sentás.</p>
+          <p class="mt-4 text-sm text-muted" data-i18n="loc.note">No tomamos reservas: venís, pedís y te sentás.</p>
         </div>
       </div>
     </div>
@@ -378,48 +433,48 @@
   <!-- ══════════ 6. FAQ (details nativo, cero JS) ══════════ -->
   <section id="faq" aria-labelledby="h-faq" class="scroll-mt-20">
     <div class="mx-auto w-full max-w-3xl px-4 py-16 md:px-8 md:py-24">
-      <h2 id="h-faq" class="font-display uppercase">Preguntas que nos hacen siempre</h2>
+      <h2 id="h-faq" class="font-display uppercase" data-i18n="faq.h2">Preguntas que nos hacen siempre</h2>
 
       <div class="mt-8 divide-y divide-white/10">
         <!-- REVISAR: confirmar que efectivamente no hay delivery por apps -->
         <details class="group py-2">
           <summary class="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 py-3 font-semibold">
-            ¿Hacen delivery?
+            <span data-i18n="faq.q1">¿Hacen delivery?</span>
             <svg class="chev shrink-0 text-brasa transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </summary>
-          <p class="pb-4 text-muted">No, y es a propósito. El medallón smash pierde la costra crocante en 10 minutos dentro de una caja. Preferimos que la comas como sale de la plancha.</p>
+          <p class="pb-4 text-muted" data-i18n="faq.a1">No, y es a propósito. El medallón smash pierde la costra crocante en 10 minutos dentro de una caja. Preferimos que la comas como sale de la plancha.</p>
         </details>
 
         <details class="group py-2">
           <summary class="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 py-3 font-semibold">
-            ¿Hay que reservar?
+            <span data-i18n="faq.q2">¿Hay que reservar?</span>
             <svg class="chev shrink-0 text-brasa transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </summary>
-          <p class="pb-4 text-muted">No hace falta. Venís, pedís en el mostrador y te sentás.</p>
+          <p class="pb-4 text-muted" data-i18n="faq.a2">No hace falta. Venís, pedís en el mostrador y te sentás.</p>
         </details>
 
         <details class="group py-2">
           <summary class="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 py-3 font-semibold">
-            ¿Cuánto sale comer acá?
+            <span data-i18n="faq.q3">¿Cuánto sale comer acá?</span>
             <svg class="chev shrink-0 text-brasa transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </summary>
-          <p class="pb-4 text-muted">La Double Smash Clásica sale $12.99 y la BBQ Bacon Smash $14.49. Con guarnición y bebida, calculá entre $10 y $20 por persona. Todos los precios están en el menú de arriba.</p>
+          <p class="pb-4 text-muted" data-i18n="faq.a3">La Double Smash Clásica sale $12.99 y la BBQ Bacon Smash $14.49. Con guarnición y bebida, calculá entre $10 y $20 por persona. Todos los precios están en el menú de arriba.</p>
         </details>
 
         <details class="group py-2">
           <summary class="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 py-3 font-semibold">
-            ¿Tienen opciones vegetarianas o sin gluten?
+            <span data-i18n="faq.q4">¿Tienen opciones vegetarianas o sin gluten?</span>
             <svg class="chev shrink-0 text-brasa transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </summary>
-          <p class="pb-4 text-muted">Sí. Tenemos opción vegetariana, y sin gluten bajo pedido — avisanos al ordenar. Si tenés alguna alergia, decinos y te contamos con qué se cocina cada cosa.</p>
+          <p class="pb-4 text-muted" data-i18n="faq.a4">Sí. Tenemos opción vegetariana, y sin gluten bajo pedido — avisanos al ordenar. Si tenés alguna alergia, decinos y te contamos con qué se cocina cada cosa.</p>
         </details>
 
         <details class="group py-2">
           <summary class="flex min-h-[56px] cursor-pointer list-none items-center justify-between gap-4 py-3 font-semibold">
-            ¿Cómo se paga?
+            <span data-i18n="faq.q5">¿Cómo se paga?</span>
             <svg class="chev shrink-0 text-brasa transition-transform" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
           </summary>
-          <p class="pb-4 text-muted">Aceptamos efectivo, tarjetas de débito y crédito, Apple Pay y Google Pay.</p>
+          <p class="pb-4 text-muted" data-i18n="faq.a5">Aceptamos efectivo, tarjetas de débito y crédito, Apple Pay y Google Pay.</p>
         </details>
       </div>
     </div>
@@ -428,23 +483,23 @@
   <!-- ══════════ 7. CTA FINAL ══════════ -->
   <section aria-labelledby="h-cta" class="border-t border-white/10 bg-surface">
     <div class="mx-auto w-full max-w-6xl px-4 py-20 text-center md:px-8 md:py-28">
-      <h2 id="h-cta" class="font-display uppercase">Se enfría rápido. Vení a buscarla.</h2>
-      <p class="mx-auto mt-4 max-w-[50ch] text-muted">
+      <h2 id="h-cta" class="font-display uppercase" data-i18n="fin.h2">Se enfría rápido. Vení a buscarla.</h2>
+      <p class="mx-auto mt-4 max-w-[50ch] text-muted" data-i18n="fin.sub">
         Estamos en 1420 Central Park Blvd, Fredericksburg. Sin reserva, sin apps, sin esperar al repartidor.
       </p>
       <div class="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center">
         <a href="https://www.google.com/maps/search/?api=1&query=Fuego+Smash+1420+Central+Park+Blvd+Fredericksburg+VA+22401"
-           target="_blank" rel="noopener" data-evt="cta_maps_final"
+           target="_blank" rel="noopener" data-evt="cta_maps_final" data-i18n="cta.directions"
            class="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl bg-brasa px-8 py-4 text-base font-semibold text-white transition hover:brightness-110 active:scale-[.98] sm:w-auto">
           Cómo llegar
         </a>
         <a href="https://wa.me/15405550198?text=Hola!%20Quer%C3%ADa%20hacer%20una%20consulta"
-           target="_blank" rel="noopener" data-evt="cta_whatsapp"
+           target="_blank" rel="noopener" data-evt="cta_whatsapp" data-i18n="cta.whatsapp" data-i18n-href="wa.final"
            class="inline-flex min-h-[52px] w-full items-center justify-center gap-2 rounded-xl px-8 py-4 text-base font-semibold text-cream ring-1 ring-white/25 transition hover:bg-white/10 active:scale-[.98] sm:w-auto">
           Consultar por WhatsApp
         </a>
       </div>
-      <p class="mt-5 text-sm text-muted">Abierto todos los días, almuerzo y cena.</p>
+      <p class="mt-5 text-sm text-muted" data-i18n="fin.hours">Abierto todos los días, almuerzo y cena.</p>
     </div>
   </section>
 
@@ -454,12 +509,19 @@
 <footer class="border-t border-white/10 bg-ink">
   <div class="mx-auto grid w-full max-w-6xl gap-8 px-4 py-12 sm:grid-cols-2 md:grid-cols-3 md:px-8">
     <div>
-      <p class="font-display text-xl uppercase">Fuego Smash</p>
-      <p class="mt-3 text-sm text-muted">Smash burgers hechas a la plancha, en Central Park, Fredericksburg VA.</p>
+      <div class="flex items-center gap-2.5">
+        <span class="logo-badge logo-badge--sm" aria-hidden="true">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="#fff" aria-hidden="true">
+            <path d="M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5Z"/>
+          </svg>
+        </span>
+        <p class="logo-word font-display text-xl uppercase">Fuego Smash</p>
+      </div>
+      <p class="mt-3 text-sm text-muted" data-i18n="foot.tagline">Smash burgers hechas a la plancha, en Central Park, Fredericksburg VA.</p>
     </div>
 
     <div>
-      <h2 class="text-sm uppercase tracking-wider text-muted">Contacto</h2>
+      <h2 class="text-sm uppercase tracking-wider text-muted" data-i18n="foot.contact">Contacto</h2>
       <ul class="mt-3 space-y-1">
         <li><a href="https://www.google.com/maps/search/?api=1&query=Fuego+Smash+1420+Central+Park+Blvd+Fredericksburg+VA+22401" target="_blank" rel="noopener" data-evt="cta_maps_footer" class="inline-flex min-h-[44px] items-center text-muted transition hover:text-cream">1420 Central Park Blvd, Fredericksburg, VA 22401</a></li>
         <li><a href="tel:+15405550142" data-evt="cta_tel_footer" class="inline-flex min-h-[44px] items-center text-muted transition hover:text-cream">(540) 555-0142</a></li>
@@ -469,19 +531,19 @@
     </div>
 
     <div>
-      <h2 class="text-sm uppercase tracking-wider text-muted">Horarios</h2>
+      <h2 class="text-sm uppercase tracking-wider text-muted" data-i18n="foot.hours">Horarios</h2>
       <ul class="mt-3 space-y-1 text-muted">
-        <li>Lun a Jue · 11:00 AM – 9:00 PM</li>
-        <li>Vie y Sáb · 11:00 AM – 10:00 PM</li>
-        <li>Domingo · 12:00 PM – 8:00 PM</li>
-        <li>Feriados · 12:00 PM – 8:00 PM</li>
+        <li data-i18n="foot.h1">Lun a Jue · 11:00 AM – 9:00 PM</li>
+        <li data-i18n="foot.h2">Vie y Sáb · 11:00 AM – 10:00 PM</li>
+        <li data-i18n="foot.h3">Domingo · 12:00 PM – 8:00 PM</li>
+        <li data-i18n="foot.h4">Feriados · 12:00 PM – 8:00 PM</li>
       </ul>
     </div>
   </div>
 
   <div class="border-t border-white/10">
     <p class="mx-auto w-full max-w-6xl px-4 py-6 text-sm text-muted md:px-8">
-      © <span id="year">2026</span> Fuego Smash. Todos los derechos reservados.
+      © <span id="year">2026</span> Fuego Smash. <span data-i18n="foot.rights">Todos los derechos reservados.</span>
     </p>
   </div>
 </footer>
@@ -495,10 +557,11 @@
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
         <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0Z"/><circle cx="12" cy="10" r="3"/>
       </svg>
-      Cómo llegar
+      <span data-i18n="cta.directions">Cómo llegar</span>
     </a>
     <a href="https://wa.me/15405550198?text=Hola!%20Quer%C3%ADa%20hacer%20una%20consulta"
-       target="_blank" rel="noopener" data-evt="cta_whatsapp_sticky" aria-label="Consultar por WhatsApp"
+       target="_blank" rel="noopener" data-evt="cta_whatsapp_sticky" data-i18n-href="wa.final"
+       aria-label="Consultar por WhatsApp" data-i18n-aria="cta.whatsapp"
        class="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ring-1 ring-white/25 active:scale-[.98]">
       <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
         <path d="M12.04 2C6.58 2 2.13 6.45 2.13 11.91c0 1.75.46 3.45 1.32 4.95L2 22l5.25-1.38a9.9 9.9 0 0 0 4.79 1.22h.01c5.46 0 9.91-4.45 9.91-9.91 0-2.65-1.03-5.14-2.9-7.01A9.82 9.82 0 0 0 12.04 2Zm0 18.13h-.01a8.2 8.2 0 0 1-4.19-1.15l-.3-.18-3.12.82.83-3.04-.2-.31a8.19 8.19 0 0 1-1.26-4.36c0-4.54 3.7-8.23 8.25-8.23a8.2 8.2 0 0 1 8.24 8.24c0 4.54-3.7 8.21-8.24 8.21Zm4.52-6.16c-.25-.12-1.47-.72-1.69-.81-.23-.08-.39-.12-.56.13-.16.24-.64.8-.79.97-.14.16-.29.18-.54.06-.25-.12-1.05-.39-1.99-1.23-.74-.66-1.23-1.47-1.38-1.72-.14-.25-.01-.38.11-.5.11-.11.25-.29.37-.43.13-.15.17-.25.25-.41.08-.17.04-.31-.02-.43-.06-.12-.56-1.34-.76-1.84-.2-.48-.4-.42-.56-.43h-.47c-.17 0-.43.06-.66.31-.22.25-.86.85-.86 2.07s.89 2.4 1.01 2.56c.12.17 1.74 2.66 4.22 3.73.59.25 1.05.4 1.41.52.59.19 1.13.16 1.56.1.47-.07 1.47-.6 1.67-1.18.21-.58.21-1.07.15-1.18-.06-.1-.22-.16-.47-.28Z"/>
@@ -581,9 +644,181 @@
 </script>
 
 <script>
+/* ═══════════════════════════════════════════════════════════════════════
+   IDIOMAS — ES / EN
+   Los textos con marcado (<br>) se inyectan con innerHTML. Es seguro
+   porque el diccionario es estático y está acá: no entra nada del usuario
+   ni de la URL. Si algún día un texto viniera de afuera, hay que pasarlo
+   por textContent.
+   ═══════════════════════════════════════════════════════════════════════ */
+var T = {
+  es: {
+    'skip':'Saltar al contenido',
+    'nav.main':'Principal', 'nav.menu':'Menú', 'nav.location':'Ubicación', 'nav.faq':'Preguntas',
+    'cta.directions':'Cómo llegar', 'cta.menu':'Ver el menú y precios', 'cta.whatsapp':'Consultar por WhatsApp',
+    'wa.final':'https://wa.me/15405550198?text=Hola!%20Quer%C3%ADa%20hacer%20una%20consulta',
+
+    'hero.h1':'La smash que no se puede<br class="hidden sm:block"> pedir por delivery',
+    'hero.sub':'Carne prensada en plancha al momento, queso que se funde solo y pan brioche tostado. Se come acá, recién salida — Central Park, Fredericksburg.',
+    'hero.openEveryDay':'Abierto todos los días', 'hero.noReserve':'Sin reserva', 'hero.rating':'★ 4.8 en Google',
+    'hero.open':'Abierto ahora hasta las ', 'hero.closed':'Cerrado ahora · hoy abre ', 'hero.closedToday':'Cerrado hoy',
+
+    'strip.aria':'Datos rápidos del local',
+    'strip.reviews':'Reseñas', 'strip.reviewsVal':'★ 4.8 · 287 opiniones',
+    'strip.where':'Dónde', 'strip.hours':'Horarios', 'strip.hoursVal':'Todos los días, almuerzo y cena',
+    'strip.price':'Precio', 'strip.priceVal':'$10 a $20 por persona',
+
+    'ben.h2':'Por qué se siente distinta',
+    'ben.lead':'No es una hamburguesa grande: es una hamburguesa bien hecha. La diferencia está en tres cosas.',
+    'ben.1t':'Sabor que se nota', 'ben.1b':'Carne prensada contra la plancha caliente: se sella por fuera, queda jugosa por dentro. Eso es el smash.',
+    'ben.2t':'Sale rápido', 'ben.2b':'El medallón fino se hace en minutos. Pedís, esperás poco y comés caliente — no tibia después de un viaje en auto.',
+    'ben.3t':'Se arma frente tuyo', 'ben.3b':'Ves la plancha, escuchás el chisporroteo y te la dan en la mano. Sin cajas, sin bolsas, sin esperar media hora.',
+
+    'menu.h2':'El menú', 'menu.lead':'Pocas opciones, todas buenas. Precios de frente, sin sorpresas al pagar.',
+    'menu.1d':'Dos medallones smash, doble cheddar, cebolla caramelizada, pepinillos y salsa especial de la casa en pan brioche.',
+    'menu.2d':'Medallón smash, bacon crocante, cheddar ahumado, aros de cebolla crocante y salsa BBQ casera.',
+    'menu.sides':'Para acompañar', 'menu.s1':'Papas a la Francesa', 'menu.s2':'Papas con Cheddar y Bacon', 'menu.s3':'Aros de Cebolla',
+    'menu.pay':'Pagás con efectivo, débito, crédito, Apple Pay o Google Pay.',
+
+    'rev.h2':'Lo que dicen los que ya vinieron', 'rev.lead':'★ 4.8 sobre 287 opiniones en Google.',
+    'rev.stars':'5 de 5 estrellas', 'rev.c1':'— Mike H., reseña de Google', 'rev.c2':'— Daniela P., reseña de Google',
+
+    'loc.h2':'Dónde estamos', 'loc.address':'Dirección', 'loc.hours':'Horarios', 'loc.maps':'Abrir en Google Maps',
+    'loc.d1':'Lunes a Jueves', 'loc.d2':'Viernes y Sábado', 'loc.d3':'Domingo', 'loc.d4':'Feriados',
+    'loc.note':'No tomamos reservas: venís, pedís y te sentás.',
+
+    'faq.h2':'Preguntas que nos hacen siempre',
+    'faq.q1':'¿Hacen delivery?', 'faq.a1':'No, y es a propósito. El medallón smash pierde la costra crocante en 10 minutos dentro de una caja. Preferimos que la comas como sale de la plancha.',
+    'faq.q2':'¿Hay que reservar?', 'faq.a2':'No hace falta. Venís, pedís en el mostrador y te sentás.',
+    'faq.q3':'¿Cuánto sale comer acá?', 'faq.a3':'La Double Smash Clásica sale $12.99 y la BBQ Bacon Smash $14.49. Con guarnición y bebida, calculá entre $10 y $20 por persona. Todos los precios están en el menú de arriba.',
+    'faq.q4':'¿Tienen opciones vegetarianas o sin gluten?', 'faq.a4':'Sí. Tenemos opción vegetariana, y sin gluten bajo pedido — avisanos al ordenar. Si tenés alguna alergia, decinos y te contamos con qué se cocina cada cosa.',
+    'faq.q5':'¿Cómo se paga?', 'faq.a5':'Aceptamos efectivo, tarjetas de débito y crédito, Apple Pay y Google Pay.',
+
+    'fin.h2':'Se enfría rápido. Vení a buscarla.',
+    'fin.sub':'Estamos en 1420 Central Park Blvd, Fredericksburg. Sin reserva, sin apps, sin esperar al repartidor.',
+    'fin.hours':'Abierto todos los días, almuerzo y cena.',
+
+    'foot.tagline':'Smash burgers hechas a la plancha, en Central Park, Fredericksburg VA.',
+    'foot.contact':'Contacto', 'foot.hours':'Horarios', 'foot.rights':'Todos los derechos reservados.',
+    'foot.h1':'Lun a Jue · 11:00 AM – 9:00 PM', 'foot.h2':'Vie y Sáb · 11:00 AM – 10:00 PM',
+    'foot.h3':'Domingo · 12:00 PM – 8:00 PM', 'foot.h4':'Feriados · 12:00 PM – 8:00 PM',
+
+    'alt.hero':'Double Smash Clásica: dos medallones de carne prensada con doble cheddar fundido, cebolla caramelizada y pepinillos en pan brioche con sésamo',
+    'alt.item1':'Double Smash Clásica con doble cheddar fundido, cebolla caramelizada y pepinillos en pan brioche',
+    'alt.item2':'BBQ Bacon Smash con bacon crocante y cheddar ahumado en pan brioche tostado',
+
+    'doc.title':'Fuego Smash | Smash Burgers en Fredericksburg, VA',
+    'btn.label':'EN', 'btn.aria':'Switch to English'
+  },
+
+  en: {
+    'skip':'Skip to content',
+    'nav.main':'Main', 'nav.menu':'Menu', 'nav.location':'Location', 'nav.faq':'FAQ',
+    'cta.directions':'Get directions', 'cta.menu':'See the menu & prices', 'cta.whatsapp':'Ask on WhatsApp',
+    'wa.final':'https://wa.me/15405550198?text=Hi!%20I%20had%20a%20question',
+
+    'hero.h1':'The smash burger you<br class="hidden sm:block"> can\'t get delivered',
+    'hero.sub':'Beef pressed on a hot griddle to order, cheese that melts on its own and a toasted brioche bun. Eaten here, straight off the flat top — Central Park, Fredericksburg.',
+    'hero.openEveryDay':'Open every day', 'hero.noReserve':'No reservations', 'hero.rating':'★ 4.8 on Google',
+    'hero.open':'Open now until ', 'hero.closed':'Closed now · opens today at ', 'hero.closedToday':'Closed today',
+
+    'strip.aria':'Quick facts about the restaurant',
+    'strip.reviews':'Reviews', 'strip.reviewsVal':'★ 4.8 · 287 reviews',
+    'strip.where':'Where', 'strip.hours':'Hours', 'strip.hoursVal':'Every day, lunch and dinner',
+    'strip.price':'Price', 'strip.priceVal':'$10 to $20 per person',
+
+    'ben.h2':'Why it tastes different',
+    'ben.lead':"It's not a big burger: it's a burger done right. The difference comes down to three things.",
+    'ben.1t':'Flavor you can taste', 'ben.1b':"Beef pressed against a hot griddle: seared outside, juicy inside. That's what smash means.",
+    'ben.2t':'It comes out fast', 'ben.2b':'A thin patty cooks in minutes. You order, wait a little and eat it hot — not lukewarm after a car ride.',
+    'ben.3t':'Built in front of you', 'ben.3b':'You see the griddle, hear the sizzle and get it handed to you. No boxes, no bags, no half-hour wait.',
+
+    'menu.h2':'The menu', 'menu.lead':'A few options, all good. Prices up front, no surprises at the register.',
+    'menu.1d':'Two smash patties, double cheddar, caramelized onion, pickles and house special sauce on a brioche bun.',
+    'menu.2d':'Smash patty, crispy bacon, smoked cheddar, crispy onion rings and homemade BBQ sauce.',
+    'menu.sides':'On the side', 'menu.s1':'French Fries', 'menu.s2':'Cheddar Bacon Fries', 'menu.s3':'Onion Rings',
+    'menu.pay':'Pay with cash, debit, credit, Apple Pay or Google Pay.',
+
+    'rev.h2':'What people who came say', 'rev.lead':'★ 4.8 out of 287 reviews on Google.',
+    'rev.stars':'5 out of 5 stars', 'rev.c1':'— Mike H., Google review', 'rev.c2':'— Daniela P., Google review',
+
+    'loc.h2':'Where we are', 'loc.address':'Address', 'loc.hours':'Hours', 'loc.maps':'Open in Google Maps',
+    'loc.d1':'Monday to Thursday', 'loc.d2':'Friday & Saturday', 'loc.d3':'Sunday', 'loc.d4':'Holidays',
+    'loc.note':"We don't take reservations: come in, order and grab a seat.",
+
+    'faq.h2':'Questions we get all the time',
+    'faq.q1':'Do you deliver?', 'faq.a1':"No, and that's on purpose. A smash patty loses its crispy crust within 10 minutes inside a box. We'd rather you eat it straight off the griddle.",
+    'faq.q2':'Do I need a reservation?', 'faq.a2':'No need. Come in, order at the counter and grab a seat.',
+    'faq.q3':'How much does it cost to eat here?', 'faq.a3':'The Double Smash Clásica is $12.99 and the BBQ Bacon Smash is $14.49. With a side and a drink, figure $10 to $20 per person. All prices are in the menu above.',
+    'faq.q4':'Do you have vegetarian or gluten-free options?', 'faq.a4':"Yes. We have a vegetarian option, and gluten-free on request — just tell us when you order. If you have an allergy, let us know and we'll walk you through how everything is cooked.",
+    'faq.q5':'How can I pay?', 'faq.a5':'We take cash, debit and credit cards, Apple Pay and Google Pay.',
+
+    'fin.h2':'It gets cold fast. Come get it.',
+    'fin.sub':"We're at 1420 Central Park Blvd, Fredericksburg. No reservations, no apps, no waiting on a delivery driver.",
+    'fin.hours':'Open every day, lunch and dinner.',
+
+    'foot.tagline':'Smash burgers cooked on the flat top, in Central Park, Fredericksburg VA.',
+    'foot.contact':'Contact', 'foot.hours':'Hours', 'foot.rights':'All rights reserved.',
+    'foot.h1':'Mon–Thu · 11:00 AM – 9:00 PM', 'foot.h2':'Fri & Sat · 11:00 AM – 10:00 PM',
+    'foot.h3':'Sunday · 12:00 PM – 8:00 PM', 'foot.h4':'Holidays · 12:00 PM – 8:00 PM',
+
+    'alt.hero':'Double Smash Clásica: two griddle-pressed patties with double melted cheddar, caramelized onion and pickles on a sesame brioche bun',
+    'alt.item1':'Double Smash Clásica with double melted cheddar, caramelized onion and pickles on a brioche bun',
+    'alt.item2':'BBQ Bacon Smash with crispy bacon and smoked cheddar on a toasted brioche bun',
+
+    'doc.title':'Fuego Smash | Smash Burgers in Fredericksburg, VA',
+    'btn.label':'ES', 'btn.aria':'Cambiar a español'
+  }
+};
+
+var IDIOMA = 'es';
+
+function traducir(lang) {
+  var d = T[lang]; if (!d) return;
+  IDIOMA = lang;
+
+  document.querySelectorAll('[data-i18n]').forEach(function (el) {
+    var v = d[el.dataset.i18n];
+    if (v == null) return;
+    if (v.indexOf('<') !== -1) { el.innerHTML = v; } else { el.textContent = v; }
+  });
+  document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+    var v = d[el.dataset.i18nAria]; if (v != null) el.setAttribute('aria-label', v);
+  });
+  document.querySelectorAll('[data-i18n-alt]').forEach(function (el) {
+    var v = d[el.dataset.i18nAlt]; if (v != null) el.setAttribute('alt', v);
+  });
+  document.querySelectorAll('[data-i18n-href]').forEach(function (el) {
+    var v = d[el.dataset.i18nHref]; if (v != null) el.setAttribute('href', v);
+  });
+
+  document.documentElement.lang = lang;
+  document.title = d['doc.title'];
+
+  var btn = document.getElementById('btn-idioma');
+  document.getElementById('btn-idioma-txt').textContent = d['btn.label'];
+  btn.setAttribute('aria-label', d['btn.aria']);
+
+  try { localStorage.setItem('fs-idioma', lang); } catch (e) {}
+  estadoApertura();
+}
+
+/* Arranca en español salvo que el visitante ya haya elegido otro idioma.
+   No se autodetecta con navigator.language a propósito: el HTML servido
+   está en español y es lo que Google indexa; que el crawler viera inglés
+   solo confundiría. Si lo querés autodetectar, avisá. */
+try {
+  var guardado = localStorage.getItem('fs-idioma');
+  if (guardado && T[guardado]) IDIOMA = guardado;
+} catch (e) {}
+
+document.getElementById('btn-idioma').addEventListener('click', function () {
+  traducir(IDIOMA === 'es' ? 'en' : 'es');
+});
+
 /* ── Tracking: puntos listos, sin pixel conectado ────────────────────────
-   Cuando conectes GA4 / Meta Pixel, estos eventos empiezan a llegar solos.
-   Eventos: cta_maps_* · cta_whatsapp_* · cta_tel_* · cta_menu_* · cta_instagram · scroll_75 */
+   Eventos: cta_maps_* · cta_whatsapp_* · cta_tel_* · cta_menu_* ·
+            cta_instagram · cta_idioma · scroll_75 */
 document.querySelectorAll('[data-evt]').forEach(function (el) {
   el.addEventListener('click', function () {
     window.gtag && window.gtag('event', el.dataset.evt);
@@ -605,15 +840,16 @@ window.addEventListener('scroll', function () {
    Horarios reales del local. 0 = domingo, 1 = lunes ... 6 = sábado.
    Usa la hora del dispositivo del visitante, no la del servidor. */
 var HORARIOS = {
-  0: ['12:00', '20:00'],                       // Domingo
+  0: ['12:00', '20:00'],                        // Domingo
   1: ['11:00', '21:00'], 2: ['11:00', '21:00'],
   3: ['11:00', '21:00'], 4: ['11:00', '21:00'], // Lunes a Jueves
   5: ['11:00', '22:00'], 6: ['11:00', '22:00']  // Viernes y Sábado
 };
 
-(function () {
+function estadoApertura() {
   var nodo = document.getElementById('estado-apertura');
   if (!nodo || !HORARIOS) return;
+  var d = T[IDIOMA];
 
   var aMin = function (t) { var p = t.split(':'); return +p[0] * 60 + +p[1]; };
   var a12h = function (t) {
@@ -631,11 +867,12 @@ var HORARIOS = {
   }
 
   nodo.textContent = abierto
-    ? 'Abierto ahora hasta las ' + a12h(franja[1])
-    : (franja ? 'Cerrado ahora · hoy abre ' + a12h(franja[0]) : 'Cerrado hoy');
+    ? d['hero.open'] + a12h(franja[1])
+    : (franja ? d['hero.closed'] + a12h(franja[0]) : d['hero.closedToday']);
   nodo.className = abierto ? 'font-semibold text-cream' : 'text-muted';
-})();
+}
 
+traducir(IDIOMA);
 document.getElementById('year').textContent = new Date().getFullYear();
 </script>
 
